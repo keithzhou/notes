@@ -1,0 +1,109 @@
+\documentclass[11pt]{article}
+\begin{document}
+\section{Ch3 Generative Models for Discrete Data}
+We have observed a sequence of data. We have a set of hypothesis function to choose from. Which one should we pick?
+
+\subsection{idea: choose the hypothesis that maximizes the probability of seeing the data (MLE)}
+\[
+h^{\mbox{ mle }} = \arg\max_h p(D|h)
+\]
+
+\subsubsection{size principle}
+Data: $D=\{2,4\}$. Hypothesis:
+\begin{description}
+\item[h1] Data is uniformly sampled from ${1,2,3,4,5,6,7,8,9,10}$
+\item[h2] Data is uniformly sampled from ${2,4,6,8,10}$
+\end{description}
+
+size principle says $h2$ is more likely because it comes from a smaller sized hypothesis. MLE satisfies size principle.
+
+suppose we have another hypotheses $h3$ that assumes data is uniformly sampled from set ${2,4}$. Now this hypothesis also satisfies the data observed, but it seems too contrived. \emph{Prior} provides a way to encode background knowledge on liklihood of different hypothesis
+
+\subsection{prior}
+Prior is a way to encode our belief on liklihood on different hypothesises. It is a mechanism by which background knowledge can be brought to bear on a problem. It is specified by providing $p(h)$
+
+\subsection{posterior}
+Posterior is the updated belif on distribution of hypothesis space after the data is observed.
+\[
+p(h|D) \propto p(D|h)p(h)
+\]
+
+Posterior combines original belief(i.e prior) with the evidence from data.
+
+As more data is gathered, liklihood will overwhelm prior and posterior distribution converges to that of liklihood:
+\[
+\log(p(h|D)) \propto \log{p(h)} + \log p(D|h) \propto \log p(h) + \sum_{n=1}^N\log p(x^{\{n\}}|h)
+\]
+The second term will overwhelm the first as more data is observed
+
+\subsection{Maximum a posterior estimation (MAP)}
+Now we have the posterior distribution on hypothesis space, one approach is to use the MAP estimator as the fianl hypothesis:
+\[
+h^{\mbox{ map }} = \arg\max_h p(h|D)
+\]
+
+\subsection{Posterior predictive distribution}
+both MLE and MAP estimators pick one hypothesis from the hypothesis space and use it as the estimator. A full Bayesian approach is to use all hypothesises with their posterior distribution:
+\[
+p(x|D) = \int_h p(x,h|D)\,dh = \int_h p(x|h,D)p(h|D)\,dh = \int_h p(x|h)p(h|D)\,dh
+\]
+
+This averaging is called \emph{Bayes model averaging}.
+\subsubsection{Advantage of Bayes model averaging over MLE and MAP}
+when dataset is small, posterior $p(h|D)$ is vague, which makes preidiction from different hypothesis gets combined to infer final result. both MLE and MAP uses only one hypothesis.
+
+As dataset gets bigger, posterior will concentrate on one hypothesis and converge to MAP 
+
+\subsection{The beta-binomial model}
+Inferring the probability of coin showing up as head given a sequence of observed coin tosses 
+
+\subsubsection{Hypothesis space}
+Suppose $X_i \sim \mathrm{Ber}(\theta)$. By varing $\theta$ you get all models in the hypothesis space
+
+\subsubsection{Liklihood}
+Suppose observed data are i.i.d:
+\[
+p(D|\theta) = \theta^{N_h} (1-\theta)^{N_t},
+\]
+where $N_h$ is the number of heads and $N_t$ is the number of tails and $N=N_h+N_t$
+
+\subsubsection{Sufficient Statistic}
+We $s(D)$ is a sufficient statistic for data $D$ if $p(\theta|D)=p(\theta|s(D))$. It means the posterior dsitribution is the same if you use original data $D$ or the sufficient statistic $s(D)$. It captures all we need to know about $D$ to infer parameters $\theta$
+
+In this example the sufficient statistics are $N_h$ and $N_t$
+
+\subsubsection{Prior}
+Assume the prior has a beta distribution:
+\[
+\theta \sim \mathrm{Beta}(\theta|a,b),
+\]
+where
+\[
+\mathrm{Beta}(\theta|a,b) \propto \theta^{a-1}(1-\theta)^{b-1}
+\]
+where $a,b$ are \emph{hyper-parameters} of the distribution
+
+\subsubsection{Posterior}
+\[
+p(\theta|D) \propto p(D|\theta)p(\theta) = \theta^{N_h+a-1}(1-\theta)^{N_t+b-1} = \mathrm{Beta}(\theta|N_h+a,N_t+b)
+\]
+Note:
+\begin{itemize}
+\item That posterior distribution has the same form as the prior distribution. In this case the prior is called the \emph{conjugate prior}
+\item the prior is effectively adding psedu conts into the experiment.
+\item If you have two datasets $D_a,D_b$, then batch update and sequential update will produce the same posterior. This makes bayesian inference well suited for online learning
+\subitem batch update: $p(\theta|D_a,D_b) \propto \mathrm{Beta}(\theta|N_h+a,N_t+a)$
+\subitem sequential update: $p(\theta|D_a,D_b) \propto p(\theta,D_a,D_b) \propto p(\theta|D_a)p(D_b|\theta)$
+\subitem MAP is outputting the mode of posterior distribution: $\theta^{\mbox{ MAP }} = \frac{N_h+a-1}{N_h+N_t+a+b-2}$
+\item the mean of the posterior distribution is $\bar{\theta} = \frac{N_h+a}{N_h+N_t+a+b}$. It is different from the mode of the distribution.
+\item posterior variance is $\mathrm{var}(\theta|D) = \frac{(a+N_h)(b+N_t)}{(a+b+N_h+N_t)^2(a+b+N_h+N_t+1)} = \frac{\hat\theta(1- \hat\theta)}{N},$ where $\hat\theta$ is the MLE of $\theta$. 
+\subitem the uncertainty $\sigma$ goes down at $\sqrt{\frac{1}{N}}$
+\subitem uncertainty is maximum at $\hat\theta = 0.5$, which means for the same dataset its easier to estimate biased coin than unbiased coin, or larger dataset is required to estimate unbiased coin
+\end{itemize}
+
+\subsubsection{Posterior predictive distribution}
+\[
+p(x=h|D) = \int_\theta p(x=h,\theta|D)\,d\theta = \int_\theta \theta p(\theta|D)\,d\theta = E[\theta|D] = \frac{N_h+a}{N_h+N_t+a+b}
+\]
+
+\end{document}
