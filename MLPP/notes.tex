@@ -106,4 +106,82 @@ Note:
 p(x=h|D) = \int_\theta p(x=h,\theta|D)\,d\theta = \int_\theta \theta p(\theta|D)\,d\theta = E[\theta|D] = \frac{N_h+a}{N_h+N_t+a+b}
 \]
 
+\subsection{predicting multiple future values}
+after observing D, assume the posterior distribution is $\mathrm{Beta}{\theta|a,b}$ predict the number of heads $x$ in future $M$ trials:
+\begin{eqnarray*}
+p(x|D) &=& \int_\theta p(x|\theta)p(\theta|D)\,d\theta = \left(\begin{array}{c}
+M\\
+x
+\end{array}\right) \int_\theta \theta^x (1-\theta)^{M-x}\mathrm{Beta}(\theta|a,b)\, d\theta  \\
+&=& 
+\left(\begin{array}{c}
+M\\
+x
+\end{array}\right) \frac{1}{B(a,b)}\int_\theta \theta^{x+a-1}(1-\theta)^{M-x+b-1}\,d\theta \\
+&=& \left(\begin{array}{c}
+M \\
+x
+\end{array}\right)\frac{B(x+a,M-x+b)}{B(a,b)}
+\end{eqnarray*}
+This distribution is alsl called \emph{beta-binomial dsitribution}
+
+The mean and variance of the distribution:
+\[
+E[x] = M\frac{a}{a+b}
+\]
+\[
+\mathrm{Var}(x) = \frac{Mab}{(a+b)^2}\frac{a+b+M}{a+b+1}
+\]
+
+\subsection{The Dirichlet-multinomial model}
+utoronto-tech-students@google.com
+generalize previous results to infer probability that a dice with $K$ sides come up as face $k$.
+\subsubsection{Liklihood}
+Suppose we observe $N$ dice rolls, $D={x_1,...,x_N}$, where $x_i \in {1,...,K}.$ Assume data is i.i.d:
+\[
+p(D|\theta)=\prod_{k=1}^{K}\theta_k^{N_k}
+\]
+
+\subsubsection{Prior}
+\[
+\mathrm{Dir}(\theta|\alpha) = \frac{1}{B(\alpha)}\prod_{k=1}^K\theta_k^{a_k-1}
+\]
+
+\subsubsection{Posterior}
+\[
+p(\theta|D) \propto p(D|\theta)p(\theta) = \mathrm{Dir}(\theta|N_1+a_1,N_2+a_2,...,N_k+a_k)
+\]
+
+MAP estimator can be obtained by taking direvative and setting to 0:
+\[
+\theta^{\mbox{ MAP }} = \frac{N_k+a_k-1}{N+\sum_i a_i - K}
+\]
+
+MLE can be ontained by setting $a_i=1 \forall i$:
+\[
+\theta^{\mbox{ MLE }} = \frac{N_k}{N}
+\]
+
+\subsubsection{Posterior predictive}
+The posterior predictive distribution for a single multinomial trial after data observation is:
+\[
+p(X=j|D)=\int p(X=j|\theta)p(\theta|D)\, d\theta=\int \theta_j p(\theta_j|D)\,d\theta_j=E[\theta_j|D]=\frac{a_j+N_j}{\sum_i N_i + \sum_i a_i}
+\]
+
+\subsection{Naive Bayes classifiers}
+Beta-binomial and Dirichlet-multinomial model data that has 1 discrete valued feature. Naive Bayes works on a vector of discrete or real-valued features, $\mathbf{x} \in \{1,...,K\}^D$
+
+Naive Bayes assumes features are independent given the class label:
+\[
+p(\mathbf{x}|y=c,\mathbf{\theta}) = \prod_{j=1}^D p(x_j|y=c,\theta_{jc})
+\]
+
+This model is called \emph{naive} because we do not expect the features to be independent, even conditional on the class label
+
+If the feature is binary, the conditional distribution can be Bernoulli distribution
+If the feature is categorical, the conditional distribution can be Multinominal distribution
+If the feature is real-valued, the conditional distribution can be Gaussian distribution
+
+\subsubsection{MLE fitting}
+p(\mathbf{x},y|\mathbf{\theta}) = 
 \end{document}
