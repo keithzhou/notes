@@ -183,5 +183,32 @@ If the feature is categorical, the conditional distribution can be Multinominal 
 If the feature is real-valued, the conditional distribution can be Gaussian distribution
 
 \subsubsection{MLE fitting}
-p(\mathbf{x},y|\mathbf{\theta}) = 
+Assume $p(Y)$ has Categorical distribution and $p(\mathbf(x)|y)$ has Bernoulli distribution
+\[
+p(\mathbf{x},y|\mathbf{\pi,\theta}) = \pi_y \prod_j \theta_{jc}^{x_{j}} (1-\theta_{jc})^{1-x_{jc}}
+\]
+Then,
+\[
+p(D|\mathbf{\pi,\theta}) = \prod_c \pi_c^{N_c} \prod_j \prod_c \theta_{jc}^{N_{jc}}(1-\theta_{jc})^{N_c - N_{jc}}
+\]
+Taking log and set dirivative to $0$:
+\begin{eqnarray*}
+\pi_c^{mle} &=& \frac{N_c}{N}\\
+\theta_{jc}^{mle} &=& \frac{N_{jc}}{N_c}
+\end{eqnarray*}
+\subsubsection{Prior}
+\[
+p(\mathbf{\pi,\theta}) = \mathrm{Dir}(\mathbf{\pi}|\mathbf{\alpha})\prod_j \prod_c \mathrm{Ber}(\theta_{jc}|a,b)
+\]
+\subsubsection{Posterior}
+\[
+p(\mathbf{pi,\theta}|D) \propto \mathrm{Dir}(\mathbf{\pi},\alpha_1+N_1,,\alpha_2+N_2...) \prod_j \prod_c \mathrm{Ber}(\theta_{jc}|a+N_{jc},b+N_c-N_{jc})
+\]
+\subsubsection{Use posterior distribution for prediction}
+\begin{eqnarray*}
+p(y=c|\mathbf{x},D) &\propto& \int p(y=c,mathbf{x},\mathbf{\pi,\theta}|D) \\
+&\propto& \int p(y=c,\mathbf{x}|\mathbf{\pi,\theta})p(\mathbf{pi,\theta}|D)\\
+&\propto& \int (\prod_j \theta_{jc})\pi_c p(\mathbf{\pi,\theta}|D)\\
+&\propto& \frac{a_c+N_c}{\sum_i a_i + \sum_i N_i} \prod_j\left(\frac{a+N_jc}{a+b+N_c}\right)^{I(x_j=1)}\left(1-\frac{a+N_{jc}}{a+b+N_c}\right)^{1-I(x_j=1)}
+\end{eqnarray*}
 \end{document}
