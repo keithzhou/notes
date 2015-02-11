@@ -1,0 +1,41 @@
+\documentclass[11pts]{article}
+\begin{document}
+\section{Exponential family distribution}
+\begin{eqnarray*}
+p(x|\theta) & = & \frac{1}{Z(\theta)} h(x) \mathrm{exp}\{\theta^T \phi(x)\} \\
+& = & h(x)\mathrm{exp}\{\theta^T \phi(x) - A(\theta)\}
+\end{eqnarray*}
+, where $A(\theta) = ln(Z(\theta))$. Different terms are called:
+
+\begin{description}
+\item[$Z(\theta)$]: partition function
+\item[$\phi(x)$]: sufficient statistics
+\item[$\theta$]: natural parameters
+\item[$h(x)$]: scaling factor
+\end{description}
+
+\section{Derivative of $A(\theta)$ is $E[\phi(x)]$}
+\begin{eqnarray*}
+\frac{dA(\theta)}{d\theta} & = & \frac{d}{d\theta}ln(\int_x h(x)\mathrm{exp}\{\theta^T \phi(x)\}dx)\\
+& = & \frac{\int_x h(x)\mathrm{exp}\{\theta^T\phi(x)\}\phi(x)dx}{\int_x h(x)\mathrm{exp}\{\theta^T\phi(x)\}dx} \\
+& = & \frac{\int_x h(x)\mathrm{exp}\{\theta^T\phi(x)\}\phi(x)dx}{\mathrm{exp}\{A(\theta)\}} \\
+& = & \int_x p(x|\theta)\phi(x)dx \\
+& = & E[\phi(x)] \\ 
+\end{eqnarray*}
+
+\section{MLE parameter estimation for exponential family}
+\begin{eqnarray*}
+p(D|\theta) & = & \prod_{t=1}^T p(x^{(t)}|\theta) \\
+& = & (\prod_t h(x^{(t)})) \mathrm{exp}\{\theta^T \sum_t \phi(x^{(t)}) - TA(\theta)\} \\
+\end{eqnarray*}
+, Then, the parameters can be found by setting derivative to $0$:
+\begin{eqnarray*}
+\frac{d}{d\theta} p(D|\theta) & = & (\prod_t h(x^{(t)}))\mathrm{exp}\{\theta^T \sum_t\phi(x^{(t)}) - TA(\theta)\}(\sum_t \phi(x^{(t)}) - T\frac{dA(\theta)}{d\theta})
+\end{eqnarray*}
+, which means:
+\[
+E[\phi(x)] = \frac{1}{T}\sum_t \phi(x^{(t)})
+\]
+
+It says the \emph{empirical mean} of sufficient statistics should match the model mean of sufficient statistics. This is called \emph{moment matching}.
+\end{document}
