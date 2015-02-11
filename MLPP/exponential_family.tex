@@ -38,4 +38,25 @@ E[\phi(x)] = \frac{1}{T}\sum_t \phi(x^{(t)})
 \]
 
 It says the \emph{empirical mean} of sufficient statistics should match the model mean of sufficient statistics. This is called \emph{moment matching}.
+
+\subsection{Log linear model for undirected graphical models}
+In UGM, the joint distribution factorizes into product of cliques:
+\[
+p(y|\theta) = \frac{1}{Z(\theta)} \prod_c \Phi_c(y_c|\theta_c)
+\]
+
+Log linear model represents $\Phi_c(y_c|\theta_c)$ as a linear combination on parameters $c$:
+\[
+ln(\Phi_c(y_c|\theta_c)) = \theta_c^T \phi(y_c)
+\]
+
+The joint distribution can be represented as a exponential facmily distribution:
+\[
+p(y|\theta) = \mathrm{exp}\left(\sum_c \theta_c^T \phi(y_c) - ln(Z(\theta))\right)
+\]
+
+MLE estimation then requires:
+\[
+E[\phi(y_c)] = \frac{1}{T} \sum_t \phi(y_c^{(t)})
+\]
 \end{document}
